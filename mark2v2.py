@@ -5,6 +5,7 @@ import libluci2
 import os
 from webserver import start_server
 import json
+from discord.ext.commands.errors import (MissingRequiredArgument, CommandNotFound)
 
 active_sessions = {}
 parser = libluci2.Parser()
@@ -17,6 +18,15 @@ bot.remove_command('help')
 @bot.event
 async def on_ready():
     print('Bot status: Online')
+
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, CommandNotFound):
+        await ctx.send(embed=embedder.error_embed(error))
+    if isinstance(error, MissingRequiredArgument):
+        await ctx.send(embed=embedder.error_embed(error))        
+    else:raise error
+
 
 @bot.command()
 async def search(ctx, db:str, name:str):
@@ -46,20 +56,24 @@ async def get(ctx, module_name:str):
     try:
         item_id = sesssion["id"]
     except KeyError:
-        await ctx.send("❎ id is not defined")
+        embed = embedder.error_embed("❎ id is not defined")
+        await ctx.send(embed=embed)
         return
 
     try:
         db_type = sesssion["type"]
     except KeyError:
-        await ctx.send("❎ type is not defined")
+        embed = embedder.error_embed("❎ type is not defined")
+        await ctx.send(embed=embed)
         return
+    
     data = parser.parseGenbank(item_id, db_type)
     try:
-        data = data[module_name.upper()]
-        await ctx.send(f"```css\n{data}\n```")
+        embed = embedder.getFunction_embed(data, module_name)
+        await ctx.send(embed=embed)
     except KeyError:
-        await ctx.send(f"❎ Module with '{module_name}' key is not defined")
+        embed = embedder.error_embed(f"❎ Module with '{module_name}' key is not defined")
+        await ctx.send(embed=embed)
         return
 
 
