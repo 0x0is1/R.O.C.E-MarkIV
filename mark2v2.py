@@ -76,6 +76,17 @@ async def get(ctx, module_name:str):
         await ctx.send(embed=embed)
         return
 
+@bot.command()
+async def help(ctx, module='default'):
+    await ctx.send(embed=embedder.help_embed(module))
+
+@bot.command()
+async def source(ctx):
+    await ctx.send(embed=embedder.source_embed())
+
+@bot.command()
+async def invite(ctx):
+    await ctx.send(embed=embedder.invite_embed())
 
 token = os.environ.get('BOT_TOKEN')
 start_server()
