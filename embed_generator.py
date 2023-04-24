@@ -37,6 +37,7 @@ class Embedder:
             embed.add_field(name="Commands", 
             value="`set` : sets parameters to get data\n`get` : gets data\n`search`: search module\ntype `help <module type>` to get help for specific command",
             inline=False)
+            return embed
         if help_module == 'set':
             embed.add_field(name="set help", value="module available for set command.")
             embed.add_field(
